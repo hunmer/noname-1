@@ -2974,7 +2974,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					var choose=[];
 					event.list=list;
 					for(var i=0;i<game.players.length;i++){
-						choose.push([game.players[i],['选择出场和备用武将',[list.randomRemove(5),'character']],2,true]);
+						choose.push([game.players[i],['选择出场和备用武将',[game.players[i].querySelector('.nameol').innerHTML != '' ? Object.keys(lib.characterPack.test) : list.randomRemove(5),'character']],2,true]);
 					}
 					game.me.chooseButtonOL(choose,function(player,result){
 						if(game.online||player==game.me) player.init(result.links[0]);
@@ -3117,17 +3117,14 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					var list=[];
 					var libCharacter={};
 					var list4=[];
-					// for(var i=0;i<lib.configOL.characterPack.length;i++){
-					// 	var pack=lib.characterPack[lib.configOL.characterPack[i]];
-					// 	for(var j in pack){
-					// 		if(typeof func=='function'&&func(j)) continue;
-					// 		if(lib.connectBanned.contains(j)) continue;
-					// 		if(lib.character[j]) libCharacter[j]=pack[j];
-					// 	}
-					// }
-					// console.log(libCharacter);
-					libCharacter = lib.characterPack.test;
-
+					for(var i=0;i<lib.configOL.characterPack.length;i++){
+						var pack=lib.characterPack[lib.configOL.characterPack[i]];
+						for(var j in pack){
+							if(typeof func=='function'&&func(j)) continue;
+							if(lib.connectBanned.contains(j)) continue;
+							if(lib.character[j]) libCharacter[j]=pack[j];
+						}
+					}
 					for(i in lib.characterReplace){
 						var ix=lib.characterReplace[i];
 						for(var j=0;j<ix.length;j++){
@@ -3155,7 +3152,8 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					event.list=list;
 					_status.characterlist=list4;
 					for(var i=0;i<game.players.length;i++){
-						choose.push([game.players[i],['选择角色',[list.randomRemove(7),'characterx']],true]);
+						//choose.push([game.players[i],['选择角色',[list.randomRemove(7),'characterx']],true]);
+						choose.push([game.players[i],['选择角色',[game.players[i].querySelector('.nameol').innerHTML != '' ? Object.keys(lib.characterPack.test) : list.randomRemove(7),'characterx']],true]);
 					}
 					game.me.chooseButtonOL(choose,function(player,result){
 						if(game.online||player==game.me) player.init(result.links[0]);
@@ -3164,6 +3162,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					for(var i in result){
 						if(result[i]=='ai'){
 							var name=event.list.randomRemove();
+							console.log(name);
 							if(lib.characterReplace[name]&&lib.characterReplace[name].length) name=lib.characterReplace[name].randomGet();
 							result[i]=name;
 						}
