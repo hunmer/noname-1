@@ -3117,14 +3117,17 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					var list=[];
 					var libCharacter={};
 					var list4=[];
-					for(var i=0;i<lib.configOL.characterPack.length;i++){
-						var pack=lib.characterPack[lib.configOL.characterPack[i]];
-						for(var j in pack){
-							if(typeof func=='function'&&func(j)) continue;
-							if(lib.connectBanned.contains(j)) continue;
-							if(lib.character[j]) libCharacter[j]=pack[j];
-						}
-					}
+					// for(var i=0;i<lib.configOL.characterPack.length;i++){
+					// 	var pack=lib.characterPack[lib.configOL.characterPack[i]];
+					// 	for(var j in pack){
+					// 		if(typeof func=='function'&&func(j)) continue;
+					// 		if(lib.connectBanned.contains(j)) continue;
+					// 		if(lib.character[j]) libCharacter[j]=pack[j];
+					// 	}
+					// }
+					// console.log(libCharacter);
+					libCharacter = lib.characterPack.test;
+
 					for(i in lib.characterReplace){
 						var ix=lib.characterReplace[i];
 						for(var j=0;j<ix.length;j++){
@@ -3184,7 +3187,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					},result);
 					setTimeout(function(){
 						ui.arena.classList.remove('choose-character');
-					},500)
+					},500);
 				});
 			},
 			chooseCharacterOL1:function(){
@@ -3193,10 +3196,13 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					'step 0'
 					game.removeCard('shengdong');
 					game.additionaldead=[];
-					var list=get.charactersOL();
-					list=list.randomGets(parseInt(lib.configOL.choice_num));
-					list.remove('huatuo');
-					list.remove('sunquan');
+					// var list=get.charactersOL();
+					// list=list.randomGets(parseInt(lib.configOL.choice_num));
+					// list.remove('huatuo');
+					// list.remove('sunquan');
+					list = Object.keys(lib.characterPack.test);
+					lib.configOL.choice_num = list.length;
+
 					event.videoId=lib.status.videoId++;
 					if(Math.random()<0.5){
 						event.choosing=game.players[0];
