@@ -32,7 +32,7 @@
 		},
 		updateURL:'https://raw.githubusercontent.com/libccy/noname',
 		mirrorURL:'https://nakamurayuri.coding.net/p/noname/d/noname/git/raw',
-		hallURL:'wss://noname-server.glitch.me',
+		hallURL:'noname.angelo.org.cn',
 		assetURL:'',
 		changeLog:[],
 		updates:[],
