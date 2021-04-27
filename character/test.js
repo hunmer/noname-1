@@ -121,6 +121,7 @@ game.import('character', function(lib, game, ui, get, ai, _status) {
         			'step 0'
         			if(player.countCards('he') <= player.storage.jcynsyz_skill_test5){
                     	player.storage.jcynsyz_skill_test5_player.gain(player.getCards('he'), 'give', player);
+                    	player.damage();
                     	event.finish();
         			}
         			'step 1'
