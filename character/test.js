@@ -8,6 +8,7 @@ game.import('character', function(lib, game, ui, get, ai, _status) {
             test_jcynsyz_jcyn: ["female", "shu", 4, ["mankai_jcyn", "yzzq"]],
             jcynsyz_shxl: ["female", "shu", 4, ["jcynsyz_skill_jr", "jcynsyz_skill_zj"]],
             jcynsyz_test: ["female", "wei", 3, ["jcynsyz_skill_test1", 'jcynsyz_skill_test2']],
+            jcynsyz_test_1: ["female", "wei", 3, ["jcynsyz_skill_test3", 'jcynsyz_skill_test4']],
         },
         characterSort: {
             test: {
@@ -19,12 +20,118 @@ game.import('character', function(lib, game, ui, get, ai, _status) {
             test_jcynsyz_jcyn: '本作主角，讃州中学二年级生。平常是红色短发，在变身之后变为粉色长发。  个性活泼开朗，总是能够保持乐观，即使受到打击也能很快振作起来。勇者适合性是全四国第一，整个勇者部实际上也是大赦围绕她建立起来的。  喜欢帮助他人，在听到了犬吠埼风的劝诱之后立即加入了勇者部。擅长运动，常常给其他运动社团当帮手。  特技是双亲教给她的武术。然而动画除了战斗就是勇者部的社区志愿服务，并没有日常练武的镜头，这个设定仅仅显示在花结手游的卡面中……  勇者装是粉白配色的轻型格斗装，满开计数器在拳套上，图案为樱花，主要攻击方式为拳击和飞踢。满开装附加了一对巨型拳头小拳石。  在东乡搬到隔壁时与其相识，两人关系非常亲密。友奈：“我想每天都能吃到东乡桑的点心！”  城乡结合部万岁，城乡一体化不可避',
             jcynsyz_shxl: '大赦派来的勇者。接受过正式的训练，精灵也是特殊的人型。有实力但比较骄傲，不擅长与人交往。',
             jcynsyz_test: '',
+            jcynsyz_test_1: '',
 
         },
         characterTitle: {
             test_jcynsyz_jcyn: '#bRewrite',
         },
         skill: {
+        	jcynsyz_skill_test3: {
+        		direct: true,
+        		marktext: '牌',
+        		intro: {
+        			content: 'cards'
+        		},
+        		trigger: {
+        			player: 'phaseDiscardAfter'
+        		},
+        		init: (player) => {
+        			player.storage.jcynsyz_skill_test3 = [];
+        		},
+        		filter: (event, player) => {
+        			return player.countCards('h');
+        		},
+        		content: () => {
+        			 'step 0'
+        			 player.chooseCard('选择置于武将上的牌', 'h', [1, player.countCards('h')]).set('ai',
+				    function(card) {
+				      if (get.position(card) == 'e') return 1 - get.value(card);
+				      if (card.name == 'shan' || card.name == 'du' || !player.hasValueTarget(card)) return 1;
+				      return 4 - get.value(card);
+				    });
+				    'step 1'
+				    if (result.bool) {
+				      // player.logSkill('kongsheng');
+				      player.storage.jcynsyz_skill_test3.addArray(result.cards);
+				      player.lose(result.cards, ui.special, 'toStorage');
+				      game.log(player, '将', result.cards, '置于其武将牌上');
+                  			  player.markSkill('jcynsyz_skill_test3', true);
+				    }
+        		},
+        		group: ['jcynsyz_skill_test3_roundStart'],
+        		subSkill: {
+        			roundStart: {
+        				direct: true,
+        				trigger: {
+        					player: 'phaseZhunbeiBegin'
+        				},
+        				fliter: (event, player) => {
+        					return player.storage.jcynsyz_skill_test3.length;
+        				},
+        				content: () => {
+        					player.gain(player.storage.jcynsyz_skill_test3,'gain2','fromStorage','log');
+							player.storage.jcynsyz_skill_test3=[];
+                  			  player.markSkill('jcynsyz_skill_test3', true);
+        				}
+        			}
+        		}
+        	},
+        	jcynsyz_skill_test4: {
+        		trigger: {
+        			player: 'phaseAfter'
+        		},
+        		direct: true,
+        		filter: (event, player) => {
+        			return player.countCards('h')
+        		},
+        		content: () => {
+        			 'step 0'
+                    player.chooseTarget(get.prompt2('jcynsyz_skill_test4'),
+                        function(card, player, target) {
+                            return target != player;
+                        });
+                    'step 1'
+                    if (result.bool) {
+                        var target = result.targets[0];
+                    	target.gain(player.getCards('h'), 'give', player);
+                        target.storage.jcynsyz_skill_test5 = player.countCards('h') + 2;
+                        target.storage.jcynsyz_skill_test5_player = player;
+                        target.addSkill('jcynsyz_skill_test5');
+                    }
+        		}
+        	},
+        	jcynsyz_skill_test5: {
+        		direct: true,
+        		marktext: '牌',
+        		mark: true, // 实时更新
+        		intro: {
+        			content: (storage, player) => {
+        				return '弃牌阶段开始时你需交给' + get.translation(player.storage.jcynsyz_skill_test5_player) + ' ' + player.storage.jcynsyz_skill_test5 + '共计张牌';
+        			}
+        		},
+        		trigger: {
+        			player: 'phaseDiscardBegin'
+        		},
+        		filter: (event, player) => {
+        			return player.storage.jcynsyz_skill_test5_player.isAlive();
+        		},
+        		onremove: true,
+        		content: () => {
+        			'step 0'
+        			if(player.countCards('he') <= player.storage.jcynsyz_skill_test5){
+                    	r.storage.jcynsyz_skill_test5_player.gain(player.getCards('he'), 'give', player);
+                    	event.finish();
+        			}
+        			'step 1'
+        			player.chooseCardButton(get.prompt('jcynsyz_skill_test5'), player.getCards('he'), player.storage.jcynsyz_skill_test5);
+        			'step 2'
+        			if(result.bool){
+        				player.storage.jcynsyz_skill_test5_player.gain(result.links, 'give', player);
+        				player.removeMark('jcynsyz_skill_test5', player.storage.jcynsyz_skill_test5);
+        			}
+        		}
+        	},
 
             jcynsyz_skill_test1: {
                 forced: true,
@@ -667,6 +774,11 @@ game.import('character', function(lib, game, ui, get, ai, _status) {
             jcynsyz_skill_test1_info: '每当你受到一点伤害后，你获得一个标记。你的摸牌阶段开始时，额外摸取X2张牌.且本回合杀上限+ X (X为你的标记数量)',
             jcynsyz_skill_test2: '技能2',
             jcynsyz_skill_test2_info: '当你死亡时，你可以移除所有标记，并对等量的玩家造成一点伤害。',
+
+            jcynsyz_skill_test3: '技能1',
+            jcynsyz_skill_test3_info: '弃牌阶段结束后，你可以将任意张手牌置于你的武将牌上，你的下回合开始你可以获得这些牌',
+            jcynsyz_skill_test4: '技能2',
+            jcynsyz_skill_test4_info: '回合结束阶段，你可以将所有手牌X交给一名玩家，该玩家出牌阶段结束后，须交给你X+2张手牌（如不足则全给且流失一点体力）',
 
         },
     };
