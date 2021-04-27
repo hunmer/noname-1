@@ -120,7 +120,7 @@ game.import('character', function(lib, game, ui, get, ai, _status) {
         		content: () => {
         			'step 0'
         			if(player.countCards('he') <= player.storage.jcynsyz_skill_test5){
-                    	r.storage.jcynsyz_skill_test5_player.gain(player.getCards('he'), 'give', player);
+                    	player.storage.jcynsyz_skill_test5_player.gain(player.getCards('he'), 'give', player);
                     	event.finish();
         			}
         			'step 1'
@@ -743,6 +743,7 @@ game.import('character', function(lib, game, ui, get, ai, _status) {
         },
         translate: {
             jcynsyz_test: '测试',
+            jcynsyz_test_1: '测试1',
             jcynsyz: "结城友奈是勇者",
             "test_jcynsyz_qxs": "犬吠埼树",
             "test_jcynsyz_jcyn": "结城友奈",
