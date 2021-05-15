@@ -33,7 +33,7 @@
 		},
 		updateURL:'https://raw.githubusercontent.com/libccy/noname',
 		mirrorURL:'https://nakamurayuri.coding.net/p/noname/d/noname/git/raw',
-		hallURL:'192.168.23.1',
+		hallURL:'wss://noname-server.glitch.me',
 		assetURL:'',
 		changeLog:[],
 		updates:[],
