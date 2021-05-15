@@ -2974,7 +2974,8 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					var choose=[];
 					event.list=list;
 					for(var i=0;i<game.players.length;i++){
-						choose.push([game.players[i],['选择出场和备用武将',[game.players[i].querySelector('.nameol').innerHTML != '' ? Object.keys(lib.characterPack.test) : list.randomRemove(5),'character']],2,true]);
+
+						choose.push([game.players[i],['选择出场和备用武将',[lib.configOL.onlyTest && game.players[i].querySelector('.nameol').innerHTML != '' ? Object.keys(lib.characterPack.test) : list.randomRemove(5),'character']],2,true]);
 					}
 					game.me.chooseButtonOL(choose,function(player,result){
 						if(game.online||player==game.me) player.init(result.links[0]);
@@ -3152,8 +3153,11 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					event.list=list;
 					_status.characterlist=list4;
 					for(var i=0;i<game.players.length;i++){
-						//choose.push([game.players[i],['选择角色',[list.randomRemove(7),'characterx']],true]);
-						choose.push([game.players[i],['选择角色',[game.players[i].querySelector('.nameol').innerHTML != '' ? Object.keys(lib.characterPack.test) : list.randomRemove(7),'characterx']],true]);
+						if(lib.configOL.onlyTest){
+							choose.push([game.players[i],['选择角色',[game.players[i].querySelector('.nameol').innerHTML != '' ? Object.keys(lib.characterPack.test) : list.randomRemove(7),'characterx']],true]);
+						}else{
+							choose.push([game.players[i],['选择角色',[list.randomRemove(7),'characterx']],true]);
+						}
 					}
 					game.me.chooseButtonOL(choose,function(player,result){
 						if(game.online||player==game.me) player.init(result.links[0]);
