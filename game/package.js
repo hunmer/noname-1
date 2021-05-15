@@ -20,8 +20,8 @@ window.noname_package={
 		swd:'轩辕剑',
 		gujian:'古剑奇谭',
 		xianjian:'仙剑奇侠传',
-				test: "测试角色",
-
+		test: "测试角色",
+		魂将: "魂将",
 	},
 	card:{
 		standard:'标准',
