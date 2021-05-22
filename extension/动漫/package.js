@@ -1,0 +1,14 @@
+extension["动漫"]={
+	intro:"",
+	author:"伶",
+	netdisk:"",
+	forum:"",
+	version:"1.0",
+	files:["gancaozou.jpg","neiku.jpg","yeshenyue.jpg","L.jpg","qiyu.jpg","shengzai.jpg","shangwen.jpg",
+		"biqigu.jpg","lingxiaolu.jpg","zhebang.jpg","xiaotai.jpg","tongren.jpg","dmtiandao.jpg",
+		"dmmiingren.jpg","sidalin.jpg","xitele.jpg","dagu.jpg","tiancaoxiao.jpg","xueyuanzhiqing.jpg",
+		"sanli.jpg","naiyazi.jpg","youmaguijiang.jpg","ban.jpg","fangcunaite.jpg","gblss.jpg",
+		"kazi.jpg","zmtzl.jpg","yaochen.jpg","shengzhu.jpg","bzhw.jpg","luluxiu.jpg","aimiboshi.jpg",
+		"dijia.jpg","xiyangyang.jpg","ktctl.jpg","xuanyue.jpg"],
+	size:"20.5MB"
+};
