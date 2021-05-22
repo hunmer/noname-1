@@ -1,0 +1,9 @@
+extension["先秦杀"]={
+	intro:"",
+	author:"鬼神易",
+	netdisk:"",
+	forum:"",
+	version:"1.0",
+	files:["擒屎皇.jpg","extension.js","extension.js.bak"],
+	size:"803KB"
+};
