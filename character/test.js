@@ -9,10 +9,19 @@ game.import('character', function(lib, game, ui, get, ai, _status) {
             jcynsyz_shxl: ["female", "shu", 4, ["jcynsyz_skill_jr", "jcynsyz_skill_zj"]],
             jcynsyz_test: ["female", "wei", 3, ["jcynsyz_skill_test1", 'jcynsyz_skill_test2']],
             jcynsyz_test_1: ["female", "wei", 3, ["jcynsyz_skill_test3", 'jcynsyz_skill_test4']],
+            jcynsyz_test_2: ["female", "wei", 3, ["jcynsyz_skill_test6"]],
+            jcynsyz_test_3: ["female", "shu", 3, ["jcynsyz_skill_test7", "jcynsyz_skill_test8"]],
+            jcynsyz_test_4: ["female", "shu", 4, ["jcynsyz_skill_test9"]],
+            jcynsyz_test_5: ["female", "qun", 3, ["jcynsyz_skill_test10", 'jcynsyz_skill_test11']],
+            jcynsyz_test_6: ["female", "qun", 4, ["qjcuidu"]],
+            caocao_1: ["male", "wei", 4, ['test_bulue', 'test_xumo', 'test_duange', 'test_nayan']],
         },
         characterSort: {
             test: {
                 jcynsyz: ["test_jcynsyz_qxs", "test_jcynsyz_jcyn", "jcynsyz_shxl"],
+                cs2: ["jcynsyz_test_1", "jcynsyz_test_2", "jcynsyz_test_3", "jcynsyz_test_4", "jcynsyz_test_5", "jcynsyz_test_6", "jcynsyz_test"],
+                cs1: ["caocao_1"],
+
             }
         },
         characterIntro: {
@@ -21,72 +30,711 @@ game.import('character', function(lib, game, ui, get, ai, _status) {
             jcynsyz_shxl: '大赦派来的勇者。接受过正式的训练，精灵也是特殊的人型。有实力但比较骄傲，不擅长与人交往。',
             jcynsyz_test: '',
             jcynsyz_test_1: '',
-
+            jcynsyz_test_2: '',
+            jcynsyz_test_3: '',
+            jcynsyz_test_4: '',
+            jcynsyz_test_5: '',
         },
         characterTitle: {
             test_jcynsyz_jcyn: '#bRewrite',
+            caocao_1: '#b毅謀定北',
         },
         skill: {
-        	jcynsyz_skill_test3: {
-        		direct: true,
-        		marktext: '牌',
-        		intro: {
-        			content: 'cards'
-        		},
-        		trigger: {
-        			player: 'phaseDiscardAfter'
-        		},
-        		init: (player) => {
-        			player.storage.jcynsyz_skill_test3 = [];
-        		},
-        		filter: (event, player) => {
-        			return player.countCards('h');
-        		},
-        		content: () => {
-        			 'step 0'
-        			 player.chooseCard('选择置于武将上的牌', 'h', [1, player.countCards('h')]).set('ai',
-				    function(card) {
-				      if (get.position(card) == 'e') return 1 - get.value(card);
-				      if (card.name == 'shan' || card.name == 'du' || !player.hasValueTarget(card)) return 1;
-				      return 4 - get.value(card);
-				    });
-				    'step 1'
-				    if (result.bool) {
-				      // player.logSkill('kongsheng');
-				      player.storage.jcynsyz_skill_test3.addArray(result.cards);
-				      player.lose(result.cards, ui.special, 'toStorage');
-				      game.log(player, '将', result.cards, '置于其武将牌上');
-                  			  player.markSkill('jcynsyz_skill_test3', true);
-				    }
-        		},
-        		group: ['jcynsyz_skill_test3_roundStart'],
-        		subSkill: {
-        			roundStart: {
-        				direct: true,
-        				trigger: {
-        					player: 'phaseZhunbeiBegin'
-        				},
-        				fliter: (event, player) => {
-        					return player.storage.jcynsyz_skill_test3.length;
-        				},
-        				content: () => {
-        					player.gain(player.storage.jcynsyz_skill_test3,'gain2','fromStorage','log');
-							player.storage.jcynsyz_skill_test3=[];
-                  			  player.markSkill('jcynsyz_skill_test3', true);
-        				}
-        			}
-        		}
-        	},
-        	jcynsyz_skill_test4: {
-        		trigger: {
-        			player: 'phaseAfter'
-        		},
-        		direct: true,
-        		filter: (event, player) => {
-        			return player.countCards('h')
-        		},
-        		content: () => {
-        			 'step 0'
+            test_bulue: {
+                trigger: {
+                    player: "phaseZhunbeiBegin",
+                },
+                mark: true,
+                marktext: '谋',
+                intro: {
+                    name: "谋",
+                    content: "当前有#个“谋”",
+                  },
+                direct: true,
+                content: function() {
+                    'step 0'
+
+                    player.chooseTarget([1, Math.min(player.hp, game.countPlayer() - 1 )], get.translation('test_bulue'), function(card, pl, target) {
+                        return target != pl
+                    });
+                    'step 1'
+                    if (result.bool) {
+                        for (let p of result.targets) {
+                            p.storage.test_bulue = player;
+                            if (p.storage.test_lue == undefined) {
+                                p.storage.test_lue = [];
+                            }
+                            p.storage.test_lue.addArray(get.cards(1));
+                            p.addSkill('test_lue');
+                            p.markSkill('test_lue', true);
+                        }
+                    }
+                }
+            },
+            test_lue: {
+                marktext: '略',
+                intro: {
+                    content: 'cards',
+                },
+                filter: (event, player) => {
+                    console.log(player)
+                    return event.targets.length && event.targets[0] == player.storage.test_bulue;
+                },
+                group: 'test_bulue_beTarget',
+                 direct: true,
+                trigger: {
+                    player: "phaseZhunbeiBegin",
+                },
+                filter: function(event, player) {
+                    return player.storage.test_lue && player.storage.test_lue.length;
+                },
+                content: () => {
+                    'step 0'
+                    var cards = player.storage.test_lue;
+                     while (cards.length) {
+                      ui.cardPile.insertBefore(cards.pop(), ui.cardPile.firstChild);
+                    }
+                     player.storage.test_lue = [];
+                    player.removeSkill('test_lue');
+                    'step 1'
+                    event.num++;
+                },
+                group: ['test_lue_draw', 'test_lue_beTarget'],
+                subSkill: {
+                    draw: {
+                        trigger: {
+                            player: "phaseDrawBegin",
+                          },
+                          forced: "true",
+                          content: function() {
+                            trigger.num += 1;
+                          },
+                    },
+                    beTarget: {
+                          trigger: {
+                            target: "useCardToTargeted",
+                          },
+                          filter: function(event, player) {
+                            return event.player.hasSkill('test_bulue') && player.storage.test_bulue != undefined && event.player == player.storage.test_bulue;
+                          },
+                        direct: true,
+                        content: () => {
+                            event._target = player.storage.test_bulue;
+                            'step 0'
+                            var cards = player.storage.test_lue;
+                            player.$throw(cards, player, false);
+                            player.storage.test_lue = [];
+                            event._target.gain(cards, 'gain2');
+                            event._target.$gain2(cards);
+                            'step 1'
+                            if(!event._target.storage.test_xumo){
+                            	event._target.addMark('test_bulue',1);
+                            }
+                            // if(player.countMark('test_bulue') >= 1){}
+                            player.removeSkill('test_lue');
+                        }
+                    },
+                }
+            },
+            test_xumo: {
+                skillAnimation: "epic",
+                animationColor: "thunder",
+                juexingji: "true",
+                trigger: {
+                    global: "phaseJieshuBegin",
+                },
+                forced: "true",
+                unique: "true",
+                audio: "2",
+                filter: function(event, player) {
+                    return !player.storage.test_xumo && player.countMark('test_bulue') >= 3;
+                },
+                content: function() {
+                    player.loseMaxHp();
+                    player.addSkill('test_duange');
+                    player.awakenSkill('test_xumo');
+                    player.storage.test_xumo = true;
+                },
+            },
+
+            test_duange: {
+                usable: 1,
+                enable: 'chooseToUse',
+                filter: function(event, player) {
+                     return player.storage.test_xumo && player.countMark('test_bulue');
+                },
+                chooseButton: {
+                    dialog: function(event, player) {
+                        var list = [];
+                        var name;
+                        for (var i = 0; i < lib.inpile.length; i++) {
+                            name = lib.inpile[i];
+                            if (get.type(name) == 'trick' && name != 'shandian') {
+                                list.push(['锦囊', '', name]);
+                            }
+                        }
+                        return ui.create.dialog('短歌', [list, 'vcard'], 'hidden');
+                    },
+                    filter: function(button, player) {
+                        return _status.event.getParent().filterCard({
+                                name: button.link[2]
+                            },
+                            player, _status.event.getParent());
+                    },
+                    backup: function(links, player) {
+                    	player.storage.test_duange = links[0][2];
+                        return {
+                            selectCard: 0,
+                            popname: true,
+                            filterCard: false,
+                            position: 'he',
+                            viewAs: {
+                                name: links[0][2],
+                                nature: links[0][3]
+                            },
+                        }
+                    },
+                    prompt: function(links, player) {
+                        return '视为' + (get.translation(links[0][3]) || '') + get.translation(links[0][2]) + '使用或打出';
+                    },
+                },
+                sub: true,
+                group: 'test_duange_use',
+                subSkill: {
+                    use:{
+                        trigger:{player:'useCard2'},
+                        direct:true,
+                        filter:function(event,player){
+                            return player.storage.test_xumo && player.countMark('test_bulue') && event.card.name == player.storage.test_duange;
+                        },
+                        line:true,
+                        content:function(){
+                            'step 0'
+                            //  && event.targets.length>=game.countPlayer() - 1
+                            if(!['wanjian', 'nanman', 'taoyuan', 'wugu'].contains(trigger.card.name)){
+                            		player.removeMark('test_bulue', 1);
+                            		return event.finish();
+                            }
+                            'step 1'
+                            player.chooseTarget('',[1, Math.min(game.countPlayer(), player.countMark('test_bulue'))],'为'+get.translation(trigger.card)+'指定目标（不指定为全体）',function(card,player,target){
+                            		return true;
+                                //return _status.event.targets.contains(target)
+                            }).set('targets',trigger.targets).set('ai',function(target){
+                                var player=_status.event.player;
+                                return -get.effect(target,_status.event.getTrigger().card,player,player)
+                            });
+                            'step 2'
+                            if(result.bool){
+                            		player.removeMark('test_bulue', result.targets.length);
+                                player.logSkill('test_duange_use',result.targets);
+                                trigger.targets = result.targets;
+                            }
+                        },
+                    },
+                }
+            },
+            test_nayan: {
+              unique: "true",
+              zhuSkill: "true",
+              trigger: {
+                global: {
+                    player: 'phaseUseEnd'
+                }
+              },
+                discard:false,
+                lose:false,
+                delay:false,
+                line:true,
+                direct:true,
+                clearTime:true,
+                prepare:function(cards,player,targets){
+                    targets[0].logSkill('huangtian');
+                },
+                prompt:function(){
+                    var player=_status.event.player;
+                    var list=game.filterPlayer(function(target){
+                        return target!=player&&target.hasZhuSkill('huangtian',player);
+                    });
+                    var str='将一张【闪】或【闪电】交给'+get.translation(list);
+                    if(list.length>1) str+='中的一人';
+                    return str;
+                },
+                filter:function(event,player){
+                    if(player.group!='wei') return false;
+                    var cnt = 0;
+                    for (var i = 0; i < player.getCards('he').length; i++) {
+                      if (get.type(event.cards[i]) != 'basic') {
+                        cnt++;
+                      }
+                    }
+                    return cnt > 0;
+                },
+                filterCard:function(card){
+                    return get.type(card) != 'basic'
+                },
+                log:false,
+                visible:true,
+                filterTarget:function(card,player,target){
+                    return target!=player&&target.hasZhuSkill('test_nayan',player);
+                },
+                content:function(){
+                    target.gain(cards,player,'giveAuto');
+                    target.addTempSkill('huangtian3','phaseUseEnd');
+                },
+                ai:{
+                    expose:0.3,
+                    order:10,
+                    result:{
+                        target:5
+                    }
+                }
+            },
+
+            qjcuidu: {
+                group: ["qjcuidu_qjcuidu1"],
+                subSkill: {
+                    qjcuidu1: {
+                        trigger: {
+                            source: "damageBegin",
+                        },
+                        filter: function(event, player) {
+                            return event && event.player;
+                        },
+                        forced: true,
+                        content: function() {
+                            var num = trigger.num;
+                            trigger.player.addSkill('qjcuidu_qjcuidu2');
+                            trigger.player.addMark('qjcuidu_qjcuidu2', num);
+                            trigger.cancel();
+                            player.draw();
+                        },
+                    },
+                    qjcuidu2: {
+                        audio: 2,
+                        trigger: {
+                            player: "damageBegin",
+                        },
+                        filter: function(event, player) {
+                            return player.countMark('qjcuidu_qjcuidu2');
+                        },
+                        content: function() {
+                            var num = player.countMark('qjcuidu_qjcuidu2');
+                            trigger.num += num;
+                            delete player.storage.qjcuidu_qjcuidu2;
+                            player.removeSkill('qjcuidu_qjcuidu2');
+                        },
+                        marktext: '毒',
+                        locked: true,
+                        intro: {
+                            content: 'mark',
+                        }
+                    },
+                },
+            },
+
+            jcynsyz_skill_test11: {
+                enable: 'phaseUse',
+                filter: (event, player) => {
+                    return Object.keys(player.storage.jcynsyz_skill_test10.players).length;
+                },
+                forced: true,
+                content: () => {
+                    var getSkills = (player, target) => {
+                        var skills = [];
+                        var list = [];
+                        if (lib.character[target.name]) list.addArray(lib.character[target.name][3]);
+                        if (lib.character[target.name1]) list.addArray(lib.character[target.name1][3]);
+                        if (lib.character[target.name2]) list.addArray(lib.character[target.name2][3]);
+
+                        for (let skill of list) {
+                            var info = get.info(skill);
+                            if (!info || info.charlotte || info.hiddenSkill || info.zhuSkill || info.juexingji || info.limited || (info.unique && !info.gainable) || lib.skill.drlt_duorui.bannedList.contains(skill) || player.getSkills().contains(skill)) {
+                                continue;
+                            }
+                            skills.push(skill);
+                        }
+                        return skills;
+                    }
+                    'step 0'
+                    player.loseHp();
+                    'step 1'
+                    if (!player.isAlive()) return event.finish();
+                    player.chooseTarget(get.prompt2('jcynsyz_skill_test11'),
+                        function(card, player, target) {
+                            return target != player && getSkills(player, target).length;
+                        });
+                    'step 2'
+                    if (!result.targets) return event.finish();
+                    var skills = getSkills(player, result.targets[0]);
+                    if (!skills.length) return event.finish();
+                    player.storage.jcynsyz_skill_test10.player = result.targets[0];
+                    skills.push('取消');
+                    player.chooseControl(skills).set('prompt', '选择获得一项技能');
+                    'step 3'
+                    if (result.control == '取消') return event.finish();
+                    player.storage.jcynsyz_skill_test10.selectedSkill = result.control;
+                    var skills = [];
+                    for (var name in player.storage.jcynsyz_skill_test10.players) {
+                        skills.addArray(player.storage.jcynsyz_skill_test10.players[name]);
+                    }
+                    skills.push('取消');
+                    player.chooseControl(skills).set('prompt', '选择丢弃一项技能');
+                    'step 4'
+                    if (result.control == '取消') return event.finish();
+                    var id;
+                    var skill = result.control;
+                    player.removeSkill(skill);
+                    for (var name in player.storage.jcynsyz_skill_test10.players) {
+                        var index = player.storage.jcynsyz_skill_test10.players[name].contains(skill);
+                        if (index != -1) {
+                            player.storage.jcynsyz_skill_test10.players[name].splice(index, 1);
+                            if (!player.storage.jcynsyz_skill_test10.players[name].length) {
+                                delete player.storage.jcynsyz_skill_test10.players[name];
+                            }
+                            var pl;
+                            if (game.hasPlayer(function(current) {
+                                    var b = current.name == name;
+                                    if (b) {
+                                        pl = current;
+                                    }
+                                    return b;
+                                })) {
+                                pl.addSkill(skill);
+                            }
+                        }
+                    }
+
+                    var target = player.storage.jcynsyz_skill_test10.player;
+                    skill = player.storage.jcynsyz_skill_test10.selectedSkill;
+
+                    target.removeSkill(skill);
+                    player.addSkill(skill);
+
+                    var id = target.name;
+                    if (player.storage.jcynsyz_skill_test10.players[id] == undefined) {
+                        player.storage.jcynsyz_skill_test10.players[id] = [];
+                    }
+                    player.storage.jcynsyz_skill_test10.players[id].push(skill);
+                    player.logSkill('jcynsyz_skill_test10', target);
+                    player.say('你的技能现在是我的啦!');
+                    game.log(player, '窃取了' + get.translation(target) + '的技能: ' + get.translation(skill));
+
+                }
+            },
+            jcynsyz_skill_test10: {
+                trigger: {
+                    player: 'dyingAfter',
+                    global: "gameDrawAfter",
+                },
+                direct: true,
+                init: (player) => {
+                    player.storage.jcynsyz_skill_test10 = {
+                        player: undefined,
+                        players: {},
+                    }
+                },
+
+                filter: (event, player) => {
+                    return player.maxHp > 1;
+                },
+                content: () => {
+                    var getSkills = (player, target) => {
+                        var skills = [];
+                        var list = [];
+                        if (lib.character[target.name]) list.addArray(lib.character[target.name][3]);
+                        if (lib.character[target.name1]) list.addArray(lib.character[target.name1][3]);
+                        if (lib.character[target.name2]) list.addArray(lib.character[target.name2][3]);
+
+                        for (let skill of list) {
+                            var info = get.info(skill);
+                            // forced 是锁定技？
+                            if (!info || info.charlotte || info.hiddenSkill || info.zhuSkill || info.juexingji || info.limited || (info.unique && !info.gainable) || lib.skill.drlt_duorui.bannedList.contains(skill) || player.getSkills().contains(skill)) {
+                                continue;
+                            }
+                            skills.push(skill);
+                        }
+                        return skills;
+                    }
+                    'step 0'
+                    player.chooseTarget(get.prompt2('jcynsyz_skill_test10'),
+                        function(card, player, target) {
+                            return target != player && getSkills(player, target).length && player.storage.jcynsyz_skill_test10.players[target.name] == undefined;
+                        });
+                    'step 1'
+                    if (!result.targets) {
+                        return event.finish();
+                    }
+                    var skills = getSkills(player, result.targets[0]);
+                    if (!skills.length) {
+                        return event.finish();
+                    }
+                    player.storage.jcynsyz_skill_test10.player = result.targets[0];
+                    player.chooseControl(skills);
+                    'step 2'
+                    var target = player.storage.jcynsyz_skill_test10.player;
+                    var skill = result.control;
+                    target.removeSkill(skill);
+                    player.addSkill(skill);
+
+                    var id = target.name;
+                    if (player.storage.jcynsyz_skill_test10.players[id] == undefined) {
+                        player.storage.jcynsyz_skill_test10.players[id] = [];
+                    }
+                    player.storage.jcynsyz_skill_test10.players[id].push(skill);
+                    player.logSkill('jcynsyz_skill_test10', target);
+                    player.loseMaxHp();
+                    player.say('你的技能现在是我的啦!');
+                    game.log(player, '窃取了' + get.translation(target) + '的技能: ' + get.translation(skill));
+
+                },
+                group: 'jcynsyz_skill_test10_death',
+                subSkill: {
+                    death: {
+                        trigger: {
+                            player: 'dieBefore'
+                        },
+                        direct: true,
+                        content: () => {
+                            console.log('die', player.storage.jcynsyz_skill_test10);
+                            for (let id in player.storage.jcynsyz_skill_test10.players) {
+                                var pl;
+                                if (game.hasPlayer(function(current) {
+                                        var b = current.name == id;
+                                        if (b) {
+                                            pl = current;
+                                        }
+                                        return b;
+                                    })) {
+                                    for (var skill of player.storage.jcynsyz_skill_test10.players[pl.name]) {
+                                        pl.addSkill(skill);
+                                        player.removeSkill(skill);
+                                    }
+                                }
+                            }
+                            player.say('啊!!!我的技能...');
+                            player.storage.jcynsyz_skill_test10.players = [];
+                        }
+                    }
+                }
+            },
+            jcynsyz_skill_test9: {
+                trigger: {
+                    target: 'useCardToTargeted'
+                },
+                filter: (event, player) => {
+                    if (event.targets.length != 1) return false;
+                    let num = get.number(event.card);
+                    let trick = get.type(event.card) == 'trick';
+                    let skip = true;
+                    for (let card of player.getCards('he')) {
+                        if (trick) {
+                            if (get.number(card) <= num) {
+                                skip = false;
+                                break;
+                            }
+                        } else {
+                            if (get.number(card) >= num) {
+                                skip = false;
+                                break;
+                            }
+                        }
+                    }
+                    return !skip;
+                },
+                direct: true,
+                content: () => {
+                    'step 0'
+                    let trick = get.type(trigger.card) == 'trick';
+                    player.chooseCardTarget({
+                        filterCard: (card) => {
+                            if (trick) {
+                                return get.number(card) <= get.number(trigger.card);
+                            }
+                            return get.number(card) >= get.number(trigger.card);
+                        },
+                        filterTarget: (card, player, target) => {
+                            return player != target;
+                        },
+                        prompt: get.prompt('jcynsyz_skill_test9'),
+                        prompt2: '弃置一张牌，将此【' + get.translation(trigger.card) + '】转移给其他角色',
+                        position: 'he',
+                        selectCard: 1
+                    });
+                    'step 1'
+                    if (result.bool) {
+                        trigger.untrigger();
+                        trigger.getParent().targets = result.targets;
+                        player.discard(result.cards);
+                    }
+                }
+            },
+            jcynsyz_skill_test7: {
+                trigger: {
+                    player: 'damageEnd',
+                },
+                direct: true,
+                filter: (event, player) => {
+                    return event.source && event.source != player && player.countCards('he', { color: 'red' }) > 0;
+                },
+
+                filterTarget: function(card, player, target) {
+                    return player != target;
+                },
+                content: () => {
+                    'step 0'
+                    var next = player.chooseCardTarget({
+                        prompt: get.prompt2('jcynsyz_skill_test7'),
+                        position: 'he',
+                        selectTarget: 2,
+                        discard: true,
+                        filterCard: (card) => {
+                            return get.color(card) == 'red'
+                        },
+                        ai1: function(card) {
+                            return 7 - get.value(card);
+                        },
+                        ai2: function(target) {
+
+                        },
+                        filterTarget: function(card, player, target) {
+                            return player != target && target.countCards('he');
+                        }
+                    });
+                    'step 1'
+                    if (!result.bool || !result.targets[0].canCompare(result.targets[1])) {
+                        return event.finish();
+                    }
+                    player.discard(result.cards);
+                    // player.$throw(result.cards, player, false);
+                    result.targets[0].chooseToCompare(result.targets[1]);
+                    'step 2'
+                    var winner = result.winner;
+                    if (result.bool && result.num1 != result.num2) {
+                        winner.chooseBool('是否令 ' + get.translation(player) + ' 回复一点体力？').ai = function(event, player) {
+                            return winner.isFriendOf(player);
+                        }
+                    }
+                    'step 3'
+                    if (result.bool) {
+                        player.recover(winner);
+                    }
+                },
+            },
+            jcynsyz_skill_test8: {
+                trigger: {
+                    player: 'recoverAfter'
+                },
+                fliter: (event, player) => {
+                    return event.source && event.source != player && event.num > 0;
+                },
+                content: () => {
+                    console.log(trigger);
+                    'step 0'
+                    player.chooseControl('heart', 'diamond', 'club', 'spade');
+                    'step 1'
+                    console.log(result);
+                    game.log(player, '选择了' + get.translation(result.control));
+                    var card = get.cardPile2(function(card) {
+                        return get.suit(card) == result.control && get.type(card) == 'basic';
+                    });
+                    console.log(card);
+                    if (!card) {
+                        return event.finish();
+                    }
+                    player.showCards(card);
+                    game.delay(1);
+                    player.chooseTarget('选择一名角色获得 ' + get.translation(card));
+                    'step 2'
+                    console.log(result);
+                    if (result.bool) {
+                        result.targets[0].gain(card, 'gain2');
+                    }
+                },
+            },
+            jcynsyz_skill_test6: {
+                trigger: {
+                    player: 'phaseZhunbeiBegin'
+                },
+                init: (player) => {
+                    player.storage.jcynsyz_skill_test6 = false;
+                },
+                usable: 1,
+                mod: {
+                    ignoredHandcard: function(card, player) {
+                        return player.storage.jcynsyz_skill_test6;
+                    },
+                },
+                content: () => {
+                    let cnt = player.countCards('h');
+                    if (cnt <= 0) cnt = 1;
+                    if (cnt > 3) cnt = 3;
+                    player.discard(player.getCards('h'));
+                    player.storage.jcynsyz_skill_test6 = cnt < player.hp; // 手牌小于血量
+                    player.draw(player.hp);
+                    player.maxHp = cnt;
+                    player.hp = cnt;
+                },
+            },
+            jcynsyz_skill_test3: {
+                direct: true,
+                marktext: '牌',
+                intro: {
+                    content: 'cards'
+                },
+                trigger: {
+                    player: 'phaseDiscardAfter'
+                },
+                init: (player) => {
+                    player.storage.jcynsyz_skill_test3 = [];
+                },
+                filter: (event, player) => {
+                    return player.countCards('h');
+                },
+                content: () => {
+                    'step 0'
+                    player.chooseCard('选择置于武将上的牌', 'h', [1, player.countCards('h')]).set('ai',
+                        function(card) {
+                            if (get.position(card) == 'e') return 1 - get.value(card);
+                            if (card.name == 'shan' || card.name == 'du' || !player.hasValueTarget(card)) return 1;
+                            return 4 - get.value(card);
+                        });
+                    'step 1'
+                    if (result.bool) {
+                        // player.logSkill('kongsheng');
+                        player.storage.jcynsyz_skill_test3.addArray(result.cards);
+                        player.lose(result.cards, ui.special, 'toStorage');
+                        game.log(player, '将', result.cards, '置于其武将牌上');
+                        player.markSkill('jcynsyz_skill_test3', true);
+                    }
+                },
+                group: ['jcynsyz_skill_test3_roundStart'],
+                subSkill: {
+                    roundStart: {
+                        direct: true,
+                        trigger: {
+                            player: 'phaseZhunbeiBegin'
+                        },
+                        fliter: (event, player) => {
+                            return player.storage.jcynsyz_skill_test3.length;
+                        },
+                        content: () => {
+                            player.gain(player.storage.jcynsyz_skill_test3, 'gain2', 'fromStorage', 'log');
+                            player.storage.jcynsyz_skill_test3 = [];
+                            player.markSkill('jcynsyz_skill_test3', true);
+                        }
+                    }
+                }
+            },
+            jcynsyz_skill_test4: {
+                trigger: {
+                    player: 'phaseAfter'
+                },
+                direct: true,
+                filter: (event, player) => {
+                    return player.countCards('h')
+                },
+                content: () => {
+                    'step 0'
                     player.chooseTarget(get.prompt2('jcynsyz_skill_test4'),
                         function(card, player, target) {
                             return target != player;
@@ -94,45 +742,45 @@ game.import('character', function(lib, game, ui, get, ai, _status) {
                     'step 1'
                     if (result.bool) {
                         var target = result.targets[0];
-                    	target.gain(player.getCards('h'), 'give', player);
+                        target.gain(player.getCards('h'), 'give', player);
                         target.storage.jcynsyz_skill_test5 = player.countCards('h') + 2;
                         target.storage.jcynsyz_skill_test5_player = player;
                         target.addSkill('jcynsyz_skill_test5');
                     }
-        		}
-        	},
-        	jcynsyz_skill_test5: {
-        		direct: true,
-        		marktext: '牌',
-        		mark: true, // 实时更新
-        		intro: {
-        			content: (storage, player) => {
-        				return '弃牌阶段开始时你需交给' + get.translation(player.storage.jcynsyz_skill_test5_player) + ' ' + player.storage.jcynsyz_skill_test5 + '共计张牌';
-        			}
-        		},
-        		trigger: {
-        			player: 'phaseDiscardBegin'
-        		},
-        		filter: (event, player) => {
-        			return player.storage.jcynsyz_skill_test5_player.isAlive();
-        		},
-        		onremove: true,
-        		content: () => {
-        			'step 0'
-        			if(player.countCards('he') <= player.storage.jcynsyz_skill_test5){
-                    	player.storage.jcynsyz_skill_test5_player.gain(player.getCards('he'), 'give', player);
-                    	player.damage();
-                    	event.finish();
-        			}
-        			'step 1'
-        			player.chooseCardButton(get.prompt('jcynsyz_skill_test5'), player.getCards('he'), player.storage.jcynsyz_skill_test5);
-        			'step 2'
-        			if(result.bool){
-        				player.storage.jcynsyz_skill_test5_player.gain(result.links, 'give', player);
-        				player.removeMark('jcynsyz_skill_test5', player.storage.jcynsyz_skill_test5);
-        			}
-        		}
-        	},
+                }
+            },
+            jcynsyz_skill_test5: {
+                direct: true,
+                marktext: '牌',
+                mark: true, // 实时更新
+                intro: {
+                    content: (storage, player) => {
+                        return '弃牌阶段开始时你需交给' + get.translation(player.storage.jcynsyz_skill_test5_player) + ' ' + player.storage.jcynsyz_skill_test5 + '共计张牌';
+                    }
+                },
+                trigger: {
+                    player: 'phaseDiscardBegin'
+                },
+                filter: (event, player) => {
+                    return player.storage.jcynsyz_skill_test5_player.isAlive();
+                },
+                onremove: true,
+                content: () => {
+                    'step 0'
+                    if (player.countCards('he') <= player.storage.jcynsyz_skill_test5) {
+                        player.storage.jcynsyz_skill_test5_player.gain(player.getCards('he'), 'give', player);
+                        player.damage();
+                        event.finish();
+                    }
+                    'step 1'
+                    player.chooseCardButton(get.prompt('jcynsyz_skill_test5'), player.getCards('he'), player.storage.jcynsyz_skill_test5);
+                    'step 2'
+                    if (result.bool) {
+                        player.storage.jcynsyz_skill_test5_player.gain(result.links, 'give', player);
+                        player.removeMark('jcynsyz_skill_test5', player.storage.jcynsyz_skill_test5);
+                    }
+                }
+            },
 
             jcynsyz_skill_test1: {
                 forced: true,
@@ -218,12 +866,12 @@ game.import('character', function(lib, game, ui, get, ai, _status) {
                 onremove: true,
                 mod: {
                     // maxHandcard:function(player,num){
-                    // 	return num+player.storage.mingjian2;
+                    //  return num+player.storage.mingjian2;
                     // },
                     cardUsable: function(card, player, num) {
-                        if (card.name == 'sha'){
+                        if (card.name == 'sha') {
                             player.markSkill('jcynsyz_skill_sha', true);
-                        	return num + player.storage.jcynsyz_skill_sha;
+                            return num + player.storage.jcynsyz_skill_sha;
                         }
                     }
                 },
@@ -745,6 +1393,10 @@ game.import('character', function(lib, game, ui, get, ai, _status) {
         translate: {
             jcynsyz_test: '测试',
             jcynsyz_test_1: '测试1',
+            jcynsyz_test_3: '测试3',
+            jcynsyz_test_2: '测试2',
+            jcynsyz_test_4: '测试4',
+            jcynsyz_test_5: '测试5',
             jcynsyz: "结城友奈是勇者",
             "test_jcynsyz_qxs": "犬吠埼树",
             "test_jcynsyz_jcyn": "结城友奈",
@@ -782,6 +1434,43 @@ game.import('character', function(lib, game, ui, get, ai, _status) {
             jcynsyz_skill_test4: '技能2',
             jcynsyz_skill_test4_info: '回合结束阶段，你可以将所有手牌X交给一名玩家，该玩家出牌阶段结束后，须交给你X+2张手牌（如不足则全给且流失一点体力）',
 
+            jcynsyz_skill_test6: '技能1',
+            jcynsyz_skill_test6_info: '回合开始时，你可以交换你的血量与手牌值且本回合内手牌上限无限（最小值为1，最大值为5）',
+
+            jcynsyz_skill_test7: '技能1',
+            jcynsyz_skill_test8: '技能2',
+            jcynsyz_skill_test7_info: '你的回合外受到伤害时，你可以弃置一张红色的手牌，指定两个玩家进行拼点，点数大的玩家可以让你回复一点体力',
+            jcynsyz_skill_test8_info: '当其他角色令你回复体力后，你可以让一名玩家从牌堆中获得一张指定花色的基本牌。',
+
+            jcynsyz_skill_test9: '技能1',
+            jcynsyz_skill_test9_info: '当你成为基本牌的目标时，你可以弃置一张点数大于或等于此牌的牌转移给其他目标。当你成为锦囊牌的目标是，你可以弃置一张点数小于或等于此牌的牌转移给其他目标。',
+
+            jcynsyz_skill_test10: '技能1',
+            jcynsyz_skill_test10_info: '游戏开始或脱离濒死状态时,如果你的血量上限大于1，你可以失去一点体力上限并窃取场上一名玩家的非限定技技能。你死亡后，你归还所有技能',
+
+            jcynsyz_skill_test11: '技能2',
+            jcynsyz_skill_test11_info: '出牌阶段，若你已窃取1个技能以上，你可以失去1点体力并选择场上一名其他玩家,窃取其一个技能并归还一个技能',
+
+            qjcuidu: '技能1',
+            qjcuidu_info: '你造成伤害时若对方没有毒标记，防止伤害改为获得等量毒标记并摸一张牌',
+
+            test_bulue: '布略',
+            test_bulue_info: '准备阶段开始时，你可以选择最多X名其他玩家，各将牌堆顶的一张牌置于其武将牌上，称为【略】。当你对有【略】玩家使用的牌生效后，你可以获得其武将牌上的略并获得一枚【谋】标记。其他玩家准备阶段开始时，若其武将牌上有【略】，则将这些略置于牌堆顶，然后此玩家摸牌阶段多摸一张牌（X为你当前的体力值)',
+
+             test_xumo: '蓄谋',
+            test_xumo_info: '觉醒技，在你获得【谋】标记后，若你的【谋】标记不小于3，你减少1点体力上限并获得技能【短歌】，并无法再次获得【谋】',
+
+            test_duange: '短歌',
+            test_duange_info: '每回合限一次，当你需要使用一张除【闪电】外的锦囊牌时，你可以移除任意数量的【谋】并视为使用了此牌。若此牌指定的目标包含场上所有角色，则你可以将目标数指定为你弃置【谋】的数量',
+
+            test_nayan: '纳言',
+            test_nayan_info: '主公技，其他魏势力角色的出牌阶段结束时，其可以交给你一张非基本牌',
+            caocao_1: '曹操',
+
+            test_lue: '略',
+            cs1: "测试角色",
+            cs2: "测试角色"
+
         },
-    };
+    }
 });
